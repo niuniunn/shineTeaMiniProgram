@@ -35,7 +35,7 @@ export default class Exchangecoupon extends Component {
       <View className='content'>
         <View className='img-box'>
           <View className='rule at-icon at-icon-alert-circle'>查看兑换规则</View>
-          <Image src='' />
+          <Image src='https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/72ppi/%E8%B5%84%E6%BA%90%2024.png' />
         </View>
         <Input
           onInput={this.onInput}

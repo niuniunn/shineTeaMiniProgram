@@ -176,7 +176,9 @@ export default class Profile extends Component {
     return (
       this.state.canIUse?(
           <View className='content'>
-            <View className="banner">BANNER</View>
+            <View className="banner">
+              <Image src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/72ppi/%E8%B5%84%E6%BA%90%2022.png" />
+            </View>
             <View className="info">
               <View className="member">
                 {

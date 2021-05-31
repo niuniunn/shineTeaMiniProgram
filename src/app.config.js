@@ -1,13 +1,14 @@
 export default {
   pages: [
-    'pages/index/index',
     'pages/profile/profile',
+    'pages/exchangeCoupon/exchangeCoupon',
+    'pages/shop/shop',
     'pages/goods/goods',
+    'pages/index/index',
     'pages/orders/orders',
     'pages/orderDetail/orderDetail',
     'pages/couponSelect/couponSelect',
     'pages/myCoupon/myCoupon',
-    'pages/exchangeCoupon/exchangeCoupon',
     'pages/address/address',
     'pages/addAddress/addAddress',
     'pages/shopSelect/shopSelect',
@@ -17,7 +18,6 @@ export default {
     'pages/pointDetail/pointDetail',
     'pages/presentDetail/presentDetail',
     'pages/pointRules/pointRules',
-    'pages/shop/shop',
   ],
   window: {
     backgroundTextStyle: 'light',

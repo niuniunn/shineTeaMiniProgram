@@ -806,13 +806,10 @@ export default class Goods extends Component {
                 indicatorDots
                 autoplay>
                 <SwiperItem>
-                  <View className='swiper-item'>banner1</View>
+                  <Image mode="aspectFill" src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/72ppi/%E8%B5%84%E6%BA%90%2014.png" />
                 </SwiperItem>
                 <SwiperItem>
-                  <View className='swiper-item'>banner2</View>
-                </SwiperItem>
-                <SwiperItem>
-                  <View className='swiper-item'>banner3</View>
+                  <Image mode="aspectFill" src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/72ppi/%E8%B5%84%E6%BA%90%202.png" />
                 </SwiperItem>
               </Swiper>
             </View>
