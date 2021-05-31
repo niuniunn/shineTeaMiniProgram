@@ -1,0 +1,63 @@
+.content {
+  min-height: 100vh;
+  background-color: #F6F6F6;
+  .shop-list {
+    height: ~"calc(100vh - 700rpx)";
+    padding: 30rpx;
+    box-sizing: border-box;
+    .shop-item {
+      display: flex;
+      padding: 20rpx;
+      background-color: #fff;
+      border: 5px solid #fff;
+      border-radius: 10rpx;
+      margin-bottom: 30rpx;
+      .left {
+        width: 440rpx;
+        padding-right: 30rpx;
+        border-right: 1px solid #ccc;
+        .shop-name {
+          margin-bottom: 16rpx;
+        }
+        .address {
+          color: #666666;
+          font-size: 26rpx;
+          line-height: 1.5;
+        }
+        .time {
+          color: #666;
+          font-size: 26rpx;
+        }
+      }
+      .right {
+        flex: 1;
+        text-align: center;
+        align-self: center;
+        margin-left: 20rpx;
+        .order {
+          font-size: 28rpx;
+        }
+        .distance {
+          font-size: 24rpx;
+          color: #666666;
+        }
+        .btns {
+          display: flex;
+          justify-content: center;
+          margin-top: 20rpx;
+          .btn {
+            width: 60rpx;
+            height: 60rpx;
+            line-height: 60rpx;
+            border-radius: 100%;
+            background-color: rgba(236, 236, 236, 0.5);
+            color: #666666;
+          }
+        }
+      }
+    }
+    .active {
+      border: 5px solid #FBB03B;
+    }
+  }
+}

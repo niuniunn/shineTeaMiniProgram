@@ -1,0 +1,136 @@
+.content {
+  min-height: 100vh;
+  padding: 30rpx;
+  background-color: #F6F6F6;
+  .my-card {
+    padding: 30rpx;
+    margin-bottom: 20rpx;
+    background-color: #fff;
+    border-radius: 20rpx;
+  }
+  .top {
+    text-align: center;
+    .status {
+      font-size: 34rpx;
+      font-weight: bold;
+      line-height: 2.4;
+    }
+    .thanks {
+      color: #B3B3B3;
+      font-size: 28rpx;
+    }
+  }
+  .center {
+    .shop {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 20rpx;
+      border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+      .left {
+        flex: 1;
+        .name {
+          margin-bottom: 10rpx;
+          font-weight: bold;
+        }
+        .address {
+          font-size: 26rpx;
+          color: #B3B3B3;
+        }
+      }
+      .right {
+        display: flex;
+        justify-content: space-between;
+        width: 200rpx;
+        align-self: center;
+      }
+    }
+    .list {
+      border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+      .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 20rpx 0;
+        .left {
+          margin-right: 20rpx;
+          background-color: #ECECEC;
+          image {
+            width: 140rpx;
+            height: 140rpx;
+          }
+        }
+        .center {
+          flex: 1;
+          .name {
+            margin-bottom: 16rpx;
+          }
+          .specification {
+            font-size: 26rpx;
+            color: #B3B3B3;
+          }
+        }
+        .right {
+          width: 80rpx;
+          text-align: right;
+          .price {
+            font-size: 30rpx;
+            margin-bottom: 16rpx;
+          }
+          .quantity {
+            font-size: 28rpx;
+            color: #B3B3B3;
+          }
+        }
+      }
+    }
+    .item-extra__info {
+      color: #000;
+      padding-right: 0;
+    }
+    .at-list__item {
+      padding: 24rpx 0;
+    }
+    .actual {
+      text-align: right;
+      font-size: 28rpx;
+      color: #666666;
+      padding: 30rpx 0 10rpx 0;
+      text {
+        color: #000;
+        font-size: 34rpx;
+        font-weight: bold;
+      }
+    }
+  }
+  .bottom {
+    .title {
+      padding-bottom: 20rpx;
+      font-weight: bold;
+      font-size: 30rpx;
+      border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+    }
+    .list {
+      .item {
+        display: flex;
+        font-size: 26rpx;
+        line-height: 2.6;
+        .name {
+          width: 160rpx;
+          color: #B3B3B3;
+        }
+        .val {
+          flex: 1;
+          color: #666666;
+        }
+      }
+    }
+  }
+  .refund {
+    padding: 40rpx 0 60rpx;
+    text-align: center;
+    color: #666666;
+    font-size: 28rpx;
+    .underline {
+      text-decoration: underline;
+    }
+  }
+}

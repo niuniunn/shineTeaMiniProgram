@@ -1,0 +1,51 @@
+.content {
+  min-height: 100vh;
+  background-color: #ECECEC;
+  .swiper {
+    height: 400rpx;
+    .swiper-item {
+      height: 100%;
+      background-color: #B3B3B3;
+    }
+  }
+  .buy-way {
+    position: relative;
+    z-index: 999;
+    .top {
+      display: flex;
+      text-align: center;
+      line-height: 1.6;
+      padding-bottom: 40rpx;
+      border-bottom: 1px solid rgba(204, 204, 204, 0.75);
+      image {
+        width: 100rpx;
+        height: 100rpx;
+        border-radius: 50%;
+      }
+      .left {
+        flex: 1;
+      }
+      .right {
+        flex: 1;
+      }
+    }
+    .bottom {
+      padding: 30rpx 50rpx 0;
+      vertical-align: middle;
+      image {
+        width: 40rpx;
+        height: 40rpx;
+      }
+      .bold {
+        margin-left: 30rpx;
+      }
+      .small {
+        float: right;
+        line-height: 2.5;
+      }
+    }
+  }
+  .points {
+    margin-top: 30rpx;
+  }
+}

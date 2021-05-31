@@ -1,0 +1,300 @@
+.content {
+  padding-top: 10rpx;
+  .top {
+    padding: 0 30rpx;
+    .shop {
+      font-weight: bold;
+    }
+    .flex{
+      justify-content: space-between;
+    }
+    .notice {
+      display: flex;
+      color: #000;
+      background-color: #fff;
+    }
+  }
+  .main {
+    display: flex;
+    height: ~"calc(100vh - 144rpx)";
+    .mask {
+      z-index: 10;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.3);
+    }
+    .scroll-left {
+      width: 160rpx;
+      background-color: #f6f6f6;
+      .scroll-category {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 20rpx 10rpx;
+        font-size: 22rpx;
+        text-align: center;
+        color: #666;
+        background-color: #F6F6F6;
+        border-left: 8px solid #f6f6f6;
+        line-height: 2;
+        .icon {
+          image {
+            width: 40rpx;
+            height: 40rpx;
+          }
+        }
+      }
+      .active {
+        background-color: #fff;
+        color: #000;
+        font-weight: bold;
+        border-color: #FBB03B;
+      }
+    }
+    .scroll-right {
+      flex: 1;
+      margin: 0 10rpx;
+      .goods {
+        color: #666;
+        .category {
+          padding: 30rpx 0;
+          font-size: 24rpx;
+          font-weight: bold;
+        }
+        .goods-item {
+          .img {
+            image {
+              width: 140rpx;
+              height: 140rpx;
+            }
+          }
+          .right {
+            margin-left: 16rpx;
+            padding-right: 20rpx;
+            .name {
+              font-size: 28rpx;
+              font-weight: bold;
+              margin-bottom: 10rpx;
+            }
+            .desc {
+              font-size: 20rpx;
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 2;
+              overflow: hidden;
+            }
+            .flex {
+              justify-content: space-between;
+              margin: 20rpx 0;
+              .btn {
+                height: 40rpx!important;
+                margin: 0;
+                background-color: #FBB03B;
+                border-color: #FBB03B;
+                font-size: 22rpx;
+                line-height: 1.8;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //modal
+  .modal {
+    z-index: 999;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -300rpx;
+    margin-top: -500rpx;
+    width: 600rpx;
+    height: 1000rpx;
+    background-color: #fff;
+    box-sizing: border-box;
+    .close {
+      position: absolute;
+      right: 20rpx;
+      top: 20rpx;
+      font-size: 44rpx;
+      color: #fff;
+    }
+    image {
+      width: 100%;
+      height: 300rpx;
+    }
+    .detail {
+      padding: 20rpx 20rpx 200rpx 20rpx;
+      height: 640rpx;
+      box-sizing: border-box;
+      .name {
+        font-size: 44rpx;
+        font-weight: bold;
+      }
+      .desc-title {
+        color: #B3B3B3;
+        font-size: 28rpx;
+        line-height: 2.6;
+      }
+      .desc {
+        color: #B3B3B3;
+        font-size: 28rpx;
+      }
+      .spec-item {
+        .spec-name {
+          color: #B3B3B3;
+          font-size: 28rpx;
+          padding-top: 40rpx
+        }
+        .spec-detail {
+          .at-tag {
+            margin: 30rpx 30rpx 0 0;
+          }
+          .at-tag--active {
+            color: #FFF;
+            border-color: #FBB03B;
+            background-color: #FBB03B;
+          }
+        }
+      }
+    }
+    .bottom {
+      position: absolute;
+      bottom: 40rpx;
+      left: 0;
+      width: 100%;
+      border-top: 1px solid #ccc;
+      background-color: #fff;
+      .flex {
+        display: flex;
+        justify-content: space-between;
+        padding: 20rpx;
+        .left {
+          .price {
+            color: #FBB03B;
+            font-size: 36rpx;
+            font-weight: bold;
+          }
+          .spec {
+            color: #B3B3B3;
+            font-size: 26rpx;
+          }
+        }
+        .right {
+          align-self: center;
+          font-size: 44rpx;
+        }
+      }
+      .btn {
+        padding: 0 20rpx;
+      }
+    }
+  }
+
+  //cart
+  .cart {
+    z-index: 999;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      height: 120rpx;
+      background-color: #F0F0F1;
+      .total-price {
+        margin-left: 200rpx;
+        font-size: 36rpx;
+        font-weight: bold;
+        align-self: center;
+      }
+      .deal {
+        width: 220rpx;
+        background-color: #FBB03B;
+        color: #fff;
+        font-weight: bold;
+        font-size: 36rpx;
+        line-height: 120rpx;
+        text-align: center;
+      }
+      .bag {
+        position: absolute;
+        left: 30rpx;
+        top: -40rpx;
+        .bag-icon {
+          width: 130rpx;
+          height: 130rpx;
+          border-radius: 50%;
+          background-color: #fff;
+          font-size: 60rpx;
+          line-height: 130rpx;
+          text-align: center;
+          color: #666666;
+          box-shadow: 6rpx 6rpx 16rpx #ccc;
+        }
+        .bag-num {
+          position: absolute;
+          right: -5rpx;
+          top: -5rpx;
+          width: 40rpx;
+          height: 40rpx;
+          border-radius: 50%;
+          background-color: #FBB03B;
+          color: #fff;
+          text-align: center;
+          line-height: 40rpx;
+        }
+      }
+    }
+    .cart-list {
+      z-index: 99;
+      background-color: #fff;
+      border-top-left-radius: 20rpx;
+      border-top-right-radius: 20rpx;
+      .cart-head {
+        text-align: right;
+        padding: 30rpx;
+        margin-bottom: 20rpx;
+        color: #9a9a9a;
+        font-size: 26rpx;
+        border-bottom: 1px solid #ccc;
+      }
+      .cart-body {
+        max-height: 600rpx;
+        padding: 0 20rpx;
+        box-sizing: border-box;
+        .cart-item {
+          display: flex;
+          justify-content: space-between;
+          .left {
+            margin-right: 30rpx;
+            image {
+              width: 140rpx;
+              height: 140rpx;
+            }
+          }
+          .right {
+            flex: 1;
+            .name {
+              margin-bottom: 10rpx;
+            }
+            .spec {
+              font-size: 26rpx;
+              color: #B3B3B3;
+              margin-bottom: 20rpx;
+            }
+            .price-num {
+              display: flex;
+              justify-content: space-between;
+            }
+          }
+        }
+      }
+    }
+  }
+}
