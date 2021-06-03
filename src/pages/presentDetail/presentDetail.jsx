@@ -1,36 +1,43 @@
 import React, { Component } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import { AtButton } from 'taro-ui'
+import {getGlobalData, setGlobalData} from "../../utils/global";
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './presentDetail.less'
 
 export default class Presentdetail extends Component {
 
-  componentWillMount () { }
+  constructor(props) {
+    super(props);
 
-  componentDidMount () { }
+    this.state = {
+      present: {}
+    }
+  }
 
-  componentWillUnmount () { }
-
-  componentDidShow () { }
-
-  componentDidHide () { }
+  onLoad() {
+    this.setState({
+      present: getGlobalData("currentPresent")
+    })
+  }
 
   render () {
+    const {present} = this.state;
+    console.log(present);
     return (
       <View className='content'>
         <View className="img">
-          <Image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic4.zhimg.com%2F50%2Fv2-cd77bf010590b1404422439b94b39058_hd.jpg&refer=http%3A%2F%2Fpic4.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615041490&t=eca23d1f4cbbb9ef953d7cfcbea60776" />
+          <Image src={present.picture} />
         </View>
         <View className="info">
-          <View className="name">3元专享券</View>
-          <View className="point"><Text>300</Text>积分</View>
+          <View className="name">{present.discount}元专享券</View>
+          <View className="point"><Text>{present.points}</Text>积分</View>
         </View>
         <View className="desc">
           <View className="item">
             <View className="title">商品类型</View>
-            <View className="detail">现金券</View>
+            <View className="detail">代金券</View>
           </View>
           <View className="item">
             <View className="title">有效期限</View>
@@ -38,7 +45,7 @@ export default class Presentdetail extends Component {
           </View>
           <View className="item">
             <View className="title">卡券面额</View>
-            <View className="detail">3.0元</View>
+            <View className="detail">{present.discount}元</View>
           </View>
           <View className="item">
             <View className="title">卡券门槛</View>
@@ -54,7 +61,11 @@ export default class Presentdetail extends Component {
           </View>
           <View className="item">
             <View className="title">可用场景</View>
-            <View className="detail">仅在闲茶SHINETEA小程序下单时可使用</View>
+            {
+              present.orderType === 0?(
+                <View className="detail">在闲茶SHINETEA小程序下单时可使用</View>
+              ):(<View className="detail">{present.orderType === 1?'仅限堂食使用':'仅限外卖订单可使用'}</View>)
+            }
           </View>
           <View className="item">
             <View className="title">礼品说明</View>
@@ -62,7 +73,7 @@ export default class Presentdetail extends Component {
           </View>
           <View className="item">
             <View className="title">礼品介绍</View>
-            <View className="detail">兑换说明：仅限在闲茶SHINETEA小程序下单时可用；积分商城可兑换的喜茶券为电子券，成功兑换后可在您的闲茶账户中查看。成功兑换后的闲茶券即刻生效，不可退货。若使用过程中遇到问题，可联系喜茶客服帮您处理。</View>
+            <View className="detail">兑换说明：仅限在闲茶SHINETEA小程序下单时可用；积分商城可兑换的闲茶券为电子券，成功兑换后可在您的闲茶账户中查看。成功兑换后的闲茶券即刻生效，不可退货。若使用过程中遇到问题，可联系闲茶客服帮您处理。</View>
           </View>
         </View>
         <AtButton

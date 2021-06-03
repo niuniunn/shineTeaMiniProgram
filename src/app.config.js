@@ -1,9 +1,11 @@
 export default {
   pages: [
-    'pages/profile/profile',
-    'pages/exchangeCoupon/exchangeCoupon',
-    'pages/shop/shop',
     'pages/goods/goods',
+    'pages/remark/remark',
+    'pages/profile/profile',
+    'pages/shop/shop',
+    'pages/userInfo/userInfo',
+    'pages/exchangeCoupon/exchangeCoupon',
     'pages/index/index',
     'pages/orders/orders',
     'pages/orderDetail/orderDetail',
@@ -13,7 +15,6 @@ export default {
     'pages/addAddress/addAddress',
     'pages/shopSelect/shopSelect',
     'pages/order/order',
-    'pages/userInfo/userInfo',
     'pages/exchangeRecord/exchangeRecord',
     'pages/pointDetail/pointDetail',
     'pages/presentDetail/presentDetail',

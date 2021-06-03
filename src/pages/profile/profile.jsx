@@ -10,13 +10,16 @@ import "taro-ui/dist/style/components/tag.scss";
 import '../../assets/styles/common.less'
 import './profile.less'
 
+const defaultSettings = require('../../defaultSettings')
+
 export default class Profile extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       isLogin: true,
-      userInfo: {},
+      userInfo: "",
+      memberInfo: {},
       canIUse: wx.canIUse('button.open-type.getUserInfo'),
     }
   }
@@ -29,12 +32,13 @@ export default class Profile extends Component {
       if(userInfo !== null && userInfo !== undefined && userInfo !== '') {
         console.log("设置");
         this.setState({userInfo});
+        this.getMemberInfo();
       }
     } catch (e) {
       console.log(e);
     }
     // 查看是否授权
-    wx.getSetting({
+    /*wx.getSetting({
       success: function(res) {
         if (res.authSetting['scope.userInfo']) {
           wx.getUserInfo({
@@ -43,6 +47,7 @@ export default class Profile extends Component {
               // 根据自己的需求有其他操作再补充
               // 我这里实现的是在用户授权成功后，调用微信的 wx.login 接口，从而获取code
               that.getOpenid();
+              that.getMemberInfo();
             }
           });
         } else {
@@ -53,7 +58,7 @@ export default class Profile extends Component {
           });
         }
       }
-    });
+    });*/
   }
 
   componentWillMount () { }
@@ -69,7 +74,7 @@ export default class Profile extends Component {
   /**
    * 获取用户openid
    */
-  getOpenid = ()=> {
+  getOpenid = (callback)=> {
     wx.login({
       success: res => {
         // 获取到用户的 code 之后：res.code
@@ -83,7 +88,10 @@ export default class Profile extends Component {
             console.log("用户的openid: " + res.data.openid);
             Taro.setStorage({
               key: 'openid',
-              data: res.data.openid
+              data: res.data.openid,
+              success: ()=> {
+                callback();
+              }
             })
           }
         });
@@ -115,6 +123,41 @@ export default class Profile extends Component {
     })
   }
 
+  getMemberInfo = ()=> {
+    const openid = Taro.getStorageSync("openid");
+    const userInfo = Taro.getStorageSync("userInfo");
+    let that = this;
+    wx.request({
+      url: defaultSettings.url + 'member/create',
+      data: {
+        openid,
+        nickname: userInfo.nickName,
+        gender: userInfo.gender
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success (res) {
+        console.log(res)
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            that.setState({
+              memberInfo: res.data.data
+            })
+            Taro.setStorage({
+              key: 'memberInfo',
+              data: res.data.data
+            })
+          }
+        }
+      },
+      fail (res) {
+        console.log(res);
+      }
+    })
+  }
+
   bindGetUserInfo = (e)=> {
     if (e.detail.userInfo) {
       //用户按了允许授权按钮
@@ -129,7 +172,8 @@ export default class Profile extends Component {
       this.setState({
         userInfo: e.detail.userInfo
       })
-      this.getOpenid();
+      this.getOpenid(this.getMemberInfo);
+      // this.getMemberInfo();
       /*localStorage.setItem("userInfo",JSON.stringify(e.detail.userInfo));
       console.log(JSON.parse(localStorage.getItem("userInfo")));*/
       //授权成功后,通过改变 isHide 的值，让实现页面显示出来，把授权页面隐藏起来
@@ -172,7 +216,8 @@ export default class Profile extends Component {
         value: '收货地址'
       }
     ];
-    const {userInfo, isLogin} = this.state;
+    const {userInfo, isLogin, memberInfo} = this.state;
+    console.log("userInfo: ", userInfo);
     return (
       this.state.canIUse?(
           <View className='content'>
@@ -182,9 +227,9 @@ export default class Profile extends Component {
             <View className="info">
               <View className="member">
                 {
-                  isLogin?(
+                  userInfo?(
                     <View>
-                      <View className="bold">Hey，{userInfo.nickName}</View>
+                      <View className="bold">Hey，{memberInfo.nickname}</View>
                       <View className="small">悠闲如你，来杯茶吧~</View>
                     </View>
                   ): null
@@ -193,7 +238,7 @@ export default class Profile extends Component {
                   <View>
                     <View className="shine">SHINE会员</View>
                     {
-                      isLogin?(<AtTag size="small" active={true}>Lv1</AtTag>) :
+                      userInfo?(<AtTag size="small" active={true}>Lv1</AtTag>) :
                         (<AtButton
                           type="primary"
                           size="small"
@@ -203,8 +248,8 @@ export default class Profile extends Component {
                           customStyle={{backgroundColor: '#000', borderColor: '#000'}}>点击登录</AtButton>)
                     }
                   </View>
-                  <View className="img" onClick={isLogin?this.toUserInfo:null}>
-                    <Image src={isLogin?userInfo.avatarUrl:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic4.zhimg.com%2F50%2Fv2-cd77bf010590b1404422439b94b39058_hd.jpg&refer=http%3A%2F%2Fpic4.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615041490&t=eca23d1f4cbbb9ef953d7cfcbea60776'} alt=""/>
+                  <View className="img" onClick={userInfo?this.toUserInfo:null}>
+                    <Image src={userInfo?userInfo.avatarUrl:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic4.zhimg.com%2F50%2Fv2-cd77bf010590b1404422439b94b39058_hd.jpg&refer=http%3A%2F%2Fpic4.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615041490&t=eca23d1f4cbbb9ef953d7cfcbea60776'} alt=""/>
                   </View>
                 </View>
               </View>

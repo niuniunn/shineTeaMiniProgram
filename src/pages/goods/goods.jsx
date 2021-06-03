@@ -4,6 +4,7 @@ import { View, Text, Swiper, SwiperItem, ScrollView, Image } from '@tarojs/compo
 import { AtButton, AtTabBar, AtIcon, AtNoticebar,AtTag,AtBadge } from 'taro-ui'
 import SwitchBar from '../../components/SwitchBar'
 import {setGlobalData, getGlobalData} from "../../utils/global";
+import {handleGoodsList} from "../../utils/dataClean";
 
 
 import "taro-ui/dist/style/components/badge.scss";
@@ -15,6 +16,7 @@ import "taro-ui/dist/style/components/tag.scss";
 import '../../assets/styles/common.less'
 import './goods.less'
 
+const defaultSettings = require('../../defaultSettings')
 const shopList = [
     {
       id: 147,
@@ -390,7 +392,7 @@ export default class Goods extends Component {
   componentDidMount () {
     setTimeout(()=>{
       this.computeHeight();
-    },100)
+    },1000)
   }
 
   componentWillUnmount () { }
@@ -413,8 +415,45 @@ export default class Goods extends Component {
 
   onLoad() {
     //获取所有门店信息，用户当前定位，自动选择距离最近的一家门店，存入全局变量中
-    setGlobalData("shopList", shopList);
+    this.getShopList();
     this.getLocation();
+    this.getGoodsList();
+    this.getShopList();
+  }
+
+  //获取商品列表
+  getGoodsList = ()=> {
+    let that = this;
+    wx.request({
+      url: defaultSettings.url + 'product/list',
+      success(res) {
+        console.log(res.data.data);
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            that.setState({
+              goodsList: handleGoodsList(res.data.data)
+            })
+          }
+        }
+      }
+    })
+  }
+
+  //获取店铺列表
+  getShopList = ()=> {
+    let that = this;
+    wx.request({
+      url: defaultSettings.url + 'shop/list',
+      success(res) {
+        console.log(res.data.data);
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            console.log("门店列表：",res.data.data);
+            setGlobalData("shopList", res.data.data);
+          }
+        }
+      }
+    })
   }
 
   //店铺选择
@@ -579,12 +618,11 @@ export default class Goods extends Component {
     currentGoods.specification.map(item => {
       item.specDetail.map(subItem => {
         if(subItem.isActive) {
-          price += subItem.price;
+          price += parseFloat(subItem.price);
           specification.push(subItem.name);
         }
       })
     })
-    price *= quantity;
     let goodsInfo = {
         id: '',
         name: '',
@@ -633,7 +671,7 @@ export default class Goods extends Component {
     let flag = false;  //购物车中有无相同规格及id的商品
     if(cartList.length>0) {
       for (let i = 0; i < cartList.length; i++) {
-        if(cartList[i].id === goodsInfo.id) {
+        if(cartList[i].productId === goodsInfo.productId) {
           if(cartList[i].specification.toString() === goodsInfo.specification.toString()) {
             cartList[i].quantity += goodsInfo.quantity;
             flag = true;
@@ -747,7 +785,7 @@ export default class Goods extends Component {
       <View className='content'>
         <View className="top">
           <View className="flex">
-            <View className="shop" onClick={this.toShopSelect}><AtIcon value='heart-2' size='20' color='#F2220F' /> {currentShop.name}<AtIcon value='chevron-right' size='20' color='#ccc' /></View>
+            <View className="shop" onClick={this.toShopSelect}><AtIcon value='heart-2' size='20' color='#F2220F' /> {currentShop.shopName}<AtIcon value='chevron-right' size='20' color='#ccc' /></View>
             <SwitchBar
               active={this.state.active}
               onChange={this.switchChange}
@@ -841,8 +879,10 @@ export default class Goods extends Component {
         {
           isShow?(
             <View className='modal'>
-              <View className='close at-icon at-icon-close-circle' onClick={this.onClose}> </View>
-              <Image src='https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic4.zhimg.com%2F50%2Fv2-cd77bf010590b1404422439b94b39058_hd.jpg&refer=http%3A%2F%2Fpic4.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615041490&t=eca23d1f4cbbb9ef953d7cfcbea60776' />
+              <View className='close at-icon at-icon-close-circle' style={{color: "#ccc"}} onClick={this.onClose}> </View>
+              <View className='img'>
+                <Image src={currentGoods.picture} />
+              </View>
               <ScrollView scrollY={true} scrollWithAnimation className='detail'>
                 <View className='name'>{currentGoods.name}</View>
                 <View className='desc-title'>产品描述</View>

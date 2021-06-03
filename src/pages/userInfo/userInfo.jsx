@@ -5,6 +5,7 @@ import Taro from "@tarojs/taro";
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './userInfo.less'
+const defaultSettings = require('../../defaultSettings')
 
 export default class Userinfo extends Component {
 
@@ -16,16 +17,24 @@ export default class Userinfo extends Component {
       birthDisable: false,  //生日是否可以更改
       telDisable: false,
       gender: 0,
+      nickname: '',
+      phoneNumber: '',
+      memberInfo: {}
     }
   }
 
   onLoad() {
     try {
+      const memberInfo = Taro.getStorageSync("memberInfo");
       const userInfo = Taro.getStorageSync("userInfo");
-      if(userInfo !== null && userInfo !== undefined && userInfo !== '') {
+      if(memberInfo !== null && memberInfo !== undefined && memberInfo !== '') {
         this.setState({
+          memberInfo,
           userInfo,
-          gender: userInfo.gender
+          gender: memberInfo.gender,
+          nickname: memberInfo.nickname,
+          phoneNumber: memberInfo.phoneNumber,
+          dateSel: memberInfo.birthday || ''
         });
       }
     } catch (e) {
@@ -55,10 +64,52 @@ export default class Userinfo extends Component {
 
   submit = ()=> {
     console.log(this.state);
+    let that = this;
+    const {nickname, phoneNumber, gender, dateSel,memberInfo} = that.state;
+    wx.request({
+      url: defaultSettings.url + 'member/edit',
+      data: {
+        openid: memberInfo.openid,
+        gender,
+        nickname
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res) {
+        console.log(res.data);
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            Taro.setStorage({
+              key: 'memberInfo',
+              data: res.data.data,
+              success() {
+                that.onLoad();
+              }
+            })
+          }
+        } else {
+          console.log("修改失败");
+        }
+      }
+    })
+  }
+
+  nicknameInput = (e)=> {
+    this.setState({
+      nickname: e.detail.value
+    })
+  }
+
+  phoneNumberInput = (e)=> {
+    this.setState({
+      phoneNumber: e.detail.value
+    })
   }
 
   render () {
-    const {userInfo, birthDisable, telDisable} = this.state;
+    const {userInfo, birthDisable, telDisable, nickname, phoneNumber,gender} = this.state;
     return (
       <View className='content'>
         <View className='img'>
@@ -69,21 +120,21 @@ export default class Userinfo extends Component {
             <View className='form-item'>
               <Text>昵称</Text>
               <View>
-                <Input name='nickName' value={userInfo.nickName} disabled />
+                <Input name='nickName' value={nickname} onInput={this.nicknameInput} />
               </View>
             </View>
             <View className='form-item'>
               <Text>手机</Text>
               <View>
-                <Input name='tel' disabled={telDisable} />
+                <Input name='tel' value={phoneNumber} onInput={this.phoneNumberInput} disabled={telDisable} />
               </View>
             </View>
             <View className='form-item'>
               <Text>性别</Text>
               <View>
                 <RadioGroup name='gender' onChange={this.genderChange}>
-                  <Radio value={1} checked={userInfo.gender === 1}>男</Radio>
-                  <Radio style='margin-left: 20rpx' value={2} checked={userInfo.gender === 2}>女</Radio>
+                  <Radio value={1} checked={gender === 1}>男</Radio>
+                  <Radio style='margin-left: 20rpx' value={2} checked={gender === 2}>女</Radio>
                 </RadioGroup>
               </View>
             </View>

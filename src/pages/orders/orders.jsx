@@ -148,10 +148,6 @@ export default class Orders extends Component {
     const tabList = [{ title: '当前订单' }, { title: '历史订单' }];
     return (
       <View className='content'>
-        <View className="want-to-say">
-          <image src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E9%A5%AE%E6%96%994.png" />
-          <Text>想对你说</Text>
-        </View>
         <AtTabs current={this.state.current} tabList={tabList} onClick={this.handleClick.bind(this)}>
           <AtTabsPane current={this.state.current} index={0}>
             <View className="tab-content">

@@ -87,6 +87,8 @@ export default class Order extends Component {
       actualPrice: 0,
       currentShop: {},
       couponList: [],
+      shippingFee: 5,  //配送费
+      remark: "",  //备注
       currentCoupon: {},   //当前选择的优惠券
       addressInfo: {
         /*addressDetail: '成都市双流区学府路一段24号成都信息工程大学',
@@ -109,7 +111,8 @@ export default class Order extends Component {
       })
     }
     this.setState({
-      addressInfo: getGlobalData("addressInfo")
+      addressInfo: getGlobalData("addressInfo"),
+      remark: getGlobalData("remark")
     })
     this.actualPriceCalcu();
   }
@@ -117,6 +120,7 @@ export default class Order extends Component {
   componentDidHide () { }
 
   onLoad() {
+    setGlobalData("remark", "");
     this.setState({
       active: getGlobalData("active"),
       cartList: getGlobalData("cartList"),
@@ -134,6 +138,7 @@ export default class Order extends Component {
     },()=>{
       setGlobalData("active", this.state.active);
       this.couponHandle();
+      this.actualPriceCalcu();
     })
   }
 
@@ -160,13 +165,17 @@ export default class Order extends Component {
 
   //计算实付金额
   actualPriceCalcu = ()=> {
-    const {totalPrice, currentCoupon} = this.state;
+    const {totalPrice, currentCoupon, active, shippingFee} = this.state;
     let actualPrice = 0;
     if(JSON.stringify(currentCoupon)!=="{}") {
       actualPrice = totalPrice - currentCoupon.discount;
     }
     else {
       actualPrice = totalPrice;
+    }
+    if(active) {
+      //外送加配送费
+      actualPrice += shippingFee;
     }
     this.setState({actualPrice})
   }
@@ -198,9 +207,20 @@ export default class Order extends Component {
     })
   }
 
+  //填写备注信息
+  writeRemark = ()=> {
+    Taro.navigateTo({
+      url: '../remark/remark'
+    })
+  }
+
+  //点击支付
+  submit = ()=> {
+    console.log(this.state);
+  }
+
   render () {
-    const {active, currentShop, addressInfo,open,cartList,totalNum,totalPrice,actualPrice,couponList,currentCoupon} = this.state;
-    console.log("当前优惠券：",currentCoupon);
+    const {active, currentShop, addressInfo,open,cartList,totalNum,totalPrice,actualPrice,couponList,currentCoupon,remark} = this.state;
     return (
       <View className='content'>
         <View className='top'>
@@ -211,7 +231,7 @@ export default class Order extends Component {
                 <View className="shop" onClick={this.selectAddress}>{addressInfo!==undefined&&addressInfo!==null?`${addressInfo.address} ${addressInfo.detail}`:`请选择收货地址`}</View>
               ):(
                 /*显示店铺*/
-                <View className="shop">{currentShop.name}</View>
+                <View className="shop">{currentShop.shopName}</View>
               )
             }
             <Text className='at-icon at-icon-chevron-right' />
@@ -277,9 +297,20 @@ export default class Order extends Component {
           <AtListItem
             arrow='right'
             title='备注'
-            extraText='口味、包装等'
+            extraText={remark?remark:'口味、包装等'}
             hasBorder={false}
+            onClick={this.writeRemark}
           />
+          {
+            active?(
+              <AtListItem
+                arrow='right'
+                title='配送费'
+                extraText='¥5'
+                hasBorder={false}
+              />
+            ):null
+          }
         </AtList>
         <View className='total'>
           共{totalNum}件商品，小计<Text className='money'>¥ {totalPrice}</Text>
@@ -288,7 +319,7 @@ export default class Order extends Component {
           <View className='left'>
             合计 <Text> ¥ {actualPrice}</Text>
           </View>
-          <View className='right'>支付</View>
+          <View className='right' onClick={this.submit}>支付</View>
         </View>
       </View>
     )

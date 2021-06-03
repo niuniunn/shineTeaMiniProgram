@@ -84,15 +84,14 @@ export default class Shopselect extends Component {
       currentShop: getGlobalData("currentShop")
     })
     const shopList = getGlobalData("shopList");
-    console.log(shopList);
     let makers = [];
     shopList.map(item=>{
       let maker = {
-        id: item.id,
+        id: item.shopId,
         longitude: item.longitude,
         latitude: item.latitude,
         label: {
-          content: item.name,
+          content: item.shopName,
           bgColor: '#fff',
           borderColor: '#666',
           padding: '20rpx',
@@ -152,15 +151,15 @@ export default class Shopselect extends Component {
         <ScrollView scrollY className='shop-list'>
           {
             shopList.map(item=>(
-              <View className={`shop-item ${item.id===currentShop.id?'active':''}`}>
-                <View className='left' onClick={()=>this.shopClick(item)}>
-                  <View className='shop-name'>{item.name}</View>
-                  <View className='address at-icon at-icon-map-pin'>{item.shopAddress}</View>
+              <View className={`shop-item ${item.shopId===currentShop.shopId?'active':''}`}>
+                <View className='left' onClick={item.isOpen?()=>this.shopClick(item):null}>
+                  <View className='shop-name'>{item.shopName}</View>
+                  <View className='address at-icon at-icon-map-pin'>{`${item.address}${item.addressDetail}`}</View>
                   <View className='time at-icon at-icon-clock'>{item.openTime}~{item.closeTime}</View>
                 </View>
                 <View className='right'>
-                  <View className='order' onClick={()=>this.shopClick(item)}>去下单</View>
-                  <View className='distance' onClick={()=>this.shopClick(item)}>距离{item.distance}km</View>
+                  <View className='order' onClick={item.isOpen?()=>this.shopClick(item):null}>{item.isOpen?'去下单':'歇业中'}</View>
+                  <View className='distance' onClick={item.isOpen?()=>this.shopClick(item):null}>距离{item.distance}km</View>
                   <View className='btns'>
                     <View className='btn at-icon at-icon-phone' style={{marginRight: '20rpx'}} onClick={()=>this.callShop(item)}> </View>
                     <View className='btn at-icon at-icon-analytics' onClick={()=>this.openMap(item)}> </View>
