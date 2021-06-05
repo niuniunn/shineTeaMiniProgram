@@ -4,7 +4,9 @@ import { AtButton } from 'taro-ui'
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './exchangeCoupon.less'
+import Taro from "@tarojs/taro";
 
+const defaultSettings = require('../../defaultSettings')
 export default class Exchangecoupon extends Component {
 
   constructor(props) {
@@ -30,6 +32,40 @@ export default class Exchangecoupon extends Component {
     })
   }
 
+  submitCouponCode = ()=> {
+    let that = this;
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    wx.request({
+      url: defaultSettings.url + 'coupon/receive1',
+      data: {
+        memberId: memberInfo.memberId,
+        couponCode: this.state.code
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res) {
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            //兑换成功
+            Taro.showToast({
+              title: '兑换成功',
+              icon: 'success',
+              duration: 2000
+            })
+          } else {
+            Taro.showToast({
+              title: res.data.message,
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        }
+      }
+    })
+  }
+
   render () {
     return (
       <View className='content'>
@@ -46,7 +82,12 @@ export default class Exchangecoupon extends Component {
             height: '120rpx',
             lineHeight: '120rpx',
           }} placeholder='请输入16位闲茶券兑换码' />
-        <AtButton type='primary' disabled={this.state.code.length!==16} customStyle={{margin: '0 30rpx',backgroundColor: '#FBB03B',borderColor: '#FBB03B'}}>兑换</AtButton>
+        <AtButton
+          type='primary'
+          disabled={this.state.code.length!==16}
+          customStyle={{margin: '0 30rpx',backgroundColor: '#FBB03B',borderColor: '#FBB03B'}}
+          onClick={this.submitCouponCode}
+        >兑换</AtButton>
       </View>
     )
   }

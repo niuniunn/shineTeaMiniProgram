@@ -803,7 +803,7 @@ export default class Goods extends Component {
             // moreText="MORE"
             onGotoMore={this.showMore}
             className="notice">
-            派大星私藏淤泥波波，选用经典波波，你是居居。。。
+            淤泥波波，选用经典波波，清香芋泥。。。
           </AtNoticebar>
         </View>
         <View className="main">

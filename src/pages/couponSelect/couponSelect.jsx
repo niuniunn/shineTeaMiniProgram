@@ -82,7 +82,11 @@ export default class Couponselect extends Component {
     const {couponList} = this.state;
     return (
       <View className='content'>
-        <View className='head-title'>可用优惠券</View>
+        {
+          JSON.stringify(couponList).indexOf('"usable":true')!==-1?(
+            <View className='head-title'>可用优惠券</View>
+          ):null
+        }
         {
           couponList.map(item=>(
             item.usable?(
@@ -96,7 +100,7 @@ export default class Couponselect extends Component {
                         <View className='title'>{item.orderType==1?'门店自提':'外卖'}{item.discount}元专享券</View>
                       )
                     }
-                    <View className='condition'>{item.condition==0?'无门槛':`订单满${item.condition}可使用`}</View>
+                    <View className='condition'>{item.condition==0?'无门槛':`订单满${item.useCondition}可使用`}</View>
                   </View>
                   <View className='right'><Text>{item.discount}</Text>元</View>
                   {/*四分之一圆*/}
@@ -113,7 +117,11 @@ export default class Couponselect extends Component {
             ):null
           ))
         }
-        <View className='head-title'>不可用优惠券</View>
+        {
+          JSON.stringify(couponList).indexOf('"usable":false')!==-1?(
+            <View className='head-title'>不可用优惠券</View>
+          ):null
+        }
         {
           couponList.map(item=>(
             !item.usable?(
@@ -127,7 +135,7 @@ export default class Couponselect extends Component {
                         <View className='title'>{item.orderType==1?'门店自提':'外卖'}{item.discount}元专享券</View>
                       )
                     }
-                    <View className='condition' style={{color: '#b3b3b3'}}>{item.condition==0?'无门槛':`订单满${item.condition}可使用`}</View>
+                    <View className='condition' style={{color: '#b3b3b3'}}>{item.useCondition==0?'无门槛':`订单满${item.useCondition}可使用`}</View>
                   </View>
                   <View className='right' style={{color: '#b3b3b3'}}><Text>{item.discount}</Text>元</View>
                   {/*四分之一圆*/}

@@ -5,6 +5,10 @@ import {getGlobalData, setGlobalData} from "../../utils/global";
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './presentDetail.less'
+import Taro from "@tarojs/taro";
+import {getNowFormatDate} from "../../utils/dateUtils";
+
+const defaultSettings = require('../../defaultSettings')
 
 export default class Presentdetail extends Component {
 
@@ -12,18 +16,121 @@ export default class Presentdetail extends Component {
     super(props);
 
     this.state = {
-      present: {}
+      present: {},
+      memberInfo: {}
     }
   }
 
   onLoad() {
+
+  }
+  componentWillMount() {
+    const memberInfo = Taro.getStorageSync("memberInfo");
     this.setState({
-      present: getGlobalData("currentPresent")
+      present: getGlobalData("currentPresent"),
+      memberInfo
     })
   }
 
+  couponExchange = ()=> {
+    const {present, memberInfo} = this.state;
+    console.log(present);
+    if(present.points > memberInfo.points) {
+      Taro.showToast({
+        title: '积分不足',
+        icon: 'none',
+        duration: 2000
+      })
+      return;
+    }
+    let that = this;
+    let date1 = new Date();
+    let date2 = new Date(date1);
+    date2.setDate(date1.getDate() + 30);
+    const today = getNowFormatDate(date1);
+    const thirtyDaysAfter = getNowFormatDate(date2);
+    console.log(today,thirtyDaysAfter);
+    wx.request({
+      url: defaultSettings.url + 'coupon/receive2',
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: {
+        memberId: memberInfo.memberId,
+        useCondition: 0,
+        startTime: today,
+        endTime: thirtyDaysAfter,
+        discount: present.discount,
+        orderType: present.orderType,
+        points: present.points
+      },
+      success(res) {
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            //重新获取memberInfo  并设置  显示兑换成功
+            Taro.showToast({
+              title: '兑换成功',
+              icon: 'success',
+              duration: 2000
+            });
+            that.getMemberInfo();
+          } else {
+            Taro.showToast({
+              title: res.data.message,
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        } else {
+          Taro.showToast({
+            title: '请求错误',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      }
+    })
+  }
+
+  getMemberInfo = ()=> {
+    const openid = Taro.getStorageSync("openid");
+    const userInfo = Taro.getStorageSync("userInfo");
+    let that = this;
+    wx.request({
+      url: defaultSettings.url + 'member/create',
+      data: {
+        openid,
+        nickname: userInfo.nickName,
+        gender: userInfo.gender
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success (res) {
+        console.log(res)
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            that.setState({
+              memberInfo: res.data.data
+            })
+            Taro.setStorage({
+              key: 'memberInfo',
+              data: res.data.data
+            })
+          }
+        }
+      },
+      fail (res) {
+        console.log(res);
+      }
+    })
+  }
+
+
   render () {
-    const {present} = this.state;
+    const {present, memberInfo} = this.state;
     console.log(present);
     return (
       <View className='content'>
@@ -79,8 +186,11 @@ export default class Presentdetail extends Component {
         <AtButton
           full
           type="primary"
-          disabled
-          customStyle={{position: 'fixed', bottom: 0, left: 0, backgroundColor: '#FBB03B', borderColor: '#FBB03B'}}>积分不足</AtButton>
+          onClick={this.couponExchange}
+          disabled={memberInfo.points<=present.points}
+          customStyle={{position: 'fixed', bottom: 0, left: 0, backgroundColor: '#FBB03B', borderColor: '#FBB03B'}}>
+          {memberInfo.points<=present.points?'积分不足':'兑换'}
+        </AtButton>
       </View>
     )
   }

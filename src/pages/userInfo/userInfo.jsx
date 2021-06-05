@@ -71,7 +71,10 @@ export default class Userinfo extends Component {
       data: {
         openid: memberInfo.openid,
         gender,
-        nickname
+        nickname,
+        phoneNumber,
+        birthday: dateSel,
+        id: memberInfo.memberId
       },
       method: 'POST',
       header: {
@@ -85,7 +88,11 @@ export default class Userinfo extends Component {
               key: 'memberInfo',
               data: res.data.data,
               success() {
-                that.onLoad();
+                Taro.showToast({
+                  title: '修改成功',
+                  icon: 'success',
+                  duration: 2000
+                })
               }
             })
           }

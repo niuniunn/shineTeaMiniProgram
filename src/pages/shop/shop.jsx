@@ -14,6 +14,7 @@ export default class Shop extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      points: 0,
       presentList: [
         {
           discount: 3,
@@ -55,15 +56,16 @@ export default class Shop extends Component {
     }
   }
 
-  componentWillMount () { }
+  onLoad() {
 
-  componentDidMount () { }
+  }
 
-  componentWillUnmount () { }
-
-  componentDidShow () { }
-
-  componentDidHide () { }
+  componentDidShow() {
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    this.setState({
+      points: memberInfo.points
+    })
+  }
 
   toPointDetail = ()=> {
     Taro.navigateTo({
@@ -112,13 +114,13 @@ export default class Shop extends Component {
   }
 
   render () {
-    const {presentList} = this.state;
+    const {points} = this.state;
     return (
       <View className='content'>
         <View className="head flex">
           <View className="left">
             <View className="small">可用积分</View>
-            <View className="point">999</View>
+            <View className="point">{points}</View>
             <View className="bottom">
               <Text  onClick={this.toPointDetail}>积分明细</Text>
               <Text className="divider">丨</Text>

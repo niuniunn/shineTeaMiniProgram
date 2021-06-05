@@ -200,19 +200,19 @@ export default class Profile extends Component {
   render () {
     const data = [
       {
-        image: 'https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png',
+        image: 'https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E7%A7%AF%E5%88%86.png',
         value: '积分商城'
       },
       {
-        image: 'https://img20.360buyimg.com/jdphoto/s72x72_jfs/t15151/308/1012305375/2300/536ee6ef/5a411466N040a074b.png',
+        image: 'https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E4%BC%98%E6%83%A0%E5%88%B8.png',
         value: '闲茶券'
       },
       {
-        image: 'https://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
+        image: 'https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E9%92%B1%E5%8C%85.png',
         value: '钱包'
       },
       {
-        image: 'https://img30.360buyimg.com/jdphoto/s72x72_jfs/t5770/97/5184449507/2423/294d5f95/595c3b4dNbc6bc95d.png',
+        image: 'https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E5%9C%B0%E5%9D%80.png',
         value: '收货地址'
       }
     ];
@@ -262,7 +262,7 @@ export default class Profile extends Component {
               {/*<View className="universe">闲茶宇宙播报</View>*/}
             </View>
             <AtList hasBorder={false} className='list'>
-              <AtListItem title='历史订单' arrow='right' />
+              <AtListItem title='我的订单' arrow='right' />
               <AtListItem title='关于闲茶' arrow='right' />
               <AtListItem title='联系客服' arrow='right' />
               <View className='cover'>

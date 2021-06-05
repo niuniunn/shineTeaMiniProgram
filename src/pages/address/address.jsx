@@ -10,36 +10,8 @@ import '../../assets/styles/common.less'
 import './address.less'
 import {getGlobalData, setGlobalData} from "../../utils/global";
 
-
-const addressList = [
-  {
-    name: '牛牛',
-    gender: 2,
-    tel: '18030565437',
-    address: '成都信息工程大学（航空港校区）',
-    detail: '12栋419',
-    longitude: 103.985231,
-    latitude: 30.580634,
-  },
-  {
-    name: '牛昕怡',
-    gender: 2,
-    tel: '18030565437',
-    address: '成都信息工程大学（航空港校区）',
-    detail: '12栋419',
-    longitude: 103.985231,
-    latitude: 30.580634,
-  },
-  {
-    name: '张三',
-    gender: 1,
-    tel: '18030565437',
-    address: '四川省成都市成华区猛追湾街',
-    detail: '23号5栋四单元1203',
-    longitude: 104.094944,
-    latitude: 30.661615,
-  }
-];
+const defaultSettings = require('../../defaultSettings')
+const QQMapWX = require('../../utils/qqmap-wx-jssdk');
 export default class Address extends Component {
 
   constructor(props) {
@@ -49,28 +21,76 @@ export default class Address extends Component {
     }
   }
 
-  onLoad() {
-    const currentShop = getGlobalData("currentShop");
-    /*const currentShop = {
-      longitude: 103.985231,
-      latitude: 30.580634,
-    }*/
-    addressList.map((item,index)=>{
-      let distance = this.getDistance(item.latitude,item.longitude,currentShop.latitude,currentShop.longitude);
-      addressList[index]["isSelectable"] = distance <= 5;
-    })
-    this.setState({addressList})
-  }
+  componentWillMount () {
 
-  componentWillMount () { }
+  }
 
   componentDidMount () { }
 
   componentWillUnmount () { }
 
-  componentDidShow () { }
+  componentDidShow () {
+    this.getAddressList();
+  }
 
   componentDidHide () { }
+
+  getAddressList = ()=> {
+    let that = this;
+    const currentShop = getGlobalData("currentShop");
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    wx.request({
+      url: defaultSettings.url + 'address/list',
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: {
+        memberId: memberInfo.memberId
+      },
+      success(res) {
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            let addressList = res.data.data;
+            addressList.map((item,index)=>{
+              let distance = that.getDistance(item.latitude,item.longitude,currentShop.latitude,currentShop.longitude);
+              addressList[index]["isSelectable"] = distance <= 5;
+              that.reverseAddressResolution(item.latitude, item.longitude).then((res)=>{
+                addressList[index]["address"] = res;
+                that.setState({addressList})
+              });
+            })
+            console.log("收货地址：",addressList);
+            that.setState({
+              addressList
+            })
+          }
+        }
+      }
+    })
+  }
+
+  //位置逆解析
+  reverseAddressResolution = (lat, lnt)=> {
+    const location = {
+      latitude: lat,
+      longitude: lnt
+    };
+    let qqmapsdk = new QQMapWX({
+      key: defaultSettings.key // 必填
+    });
+    return new Promise((resolve, reject) => {
+      qqmapsdk.reverseGeocoder({
+        location, //获取表单传入的位置坐标,不填默认当前位置,示例为string格式
+        //get_poi: 1, //是否返回周边POI列表：1.返回；0不返回(默认),非必须参数
+        success: function (res) {//成功后的回调
+          console.log(res);
+          resolve(res.result.address);
+        }
+      })
+    })
+  }
+
 
   getDistance (la1, lo1, la2, lo2) {
     let La1 = la1 * Math.PI / 180.0;
@@ -95,6 +115,43 @@ export default class Address extends Component {
     });
   }
 
+  deleteAddress = (addressInfo)=> {
+    let that = this;
+    Taro.showModal({
+      title: '提示',
+      content: '确定删除改地址？',
+      success: function (res) {
+        if (res.confirm) {
+          console.log('用户点击确定')
+          wx.request({
+            url: defaultSettings.url + 'address/del',
+            method: 'POST',
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+              addressId: addressInfo.addressId
+            },
+            success(response) {
+              if(response.statusCode === 200) {
+                if(response.data.code === 0) {
+                  Taro.showToast({
+                    title: '删除成功',
+                    icon: 'success',
+                    duration: 2000
+                  });
+                  that.getAddressList();
+                }
+              }
+            }
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  }
+
   backToOrder = (item)=> {
     setGlobalData("addressInfo", item);
     Taro.navigateBack({
@@ -116,10 +173,11 @@ export default class Address extends Component {
             item.isSelectable?(
               <View className="item">
                 <View className="left" onClick={()=>this.backToOrder(item)}>
-                  <View className="address">{item.address} {item.detail}</View>
-                  <View className="name">{item.name}（{item.gender===1?"先生":"女士"}） {item.tel}</View>
+                  <View className="address">{`${item.address} ${item.addressDetail}`}</View>
+                  <View className="name">{item.name}（{item.gender===1?"先生":"女士"}） {item.phoneNumber}</View>
                 </View>
                 <View className='at-icon at-icon-edit right' onClick={()=>this.toEdit(item)}> </View>
+                <View className='at-icon at-icon-trash right' onClick={()=>this.deleteAddress(item)}> </View>
               </View>
             ):null
           ))
@@ -134,10 +192,11 @@ export default class Address extends Component {
             !item.isSelectable?(
               <View className="item disable">
                 <View className="left">
-                  <View className="address">{item.address} {item.detail}</View>
-                  <View className="name">{item.name}（{item.gender===1?"先生":"女士"}） {item.tel}</View>
+                  <View className="address">{item.address} {item.addressDetail}</View>
+                  <View className="name">{item.name}（{item.gender===1?"先生":"女士"}） {item.phoneNumber}</View>
                 </View>
-                <View className='at-icon at-icon-edit right'> </View>
+                <View className='at-icon at-icon-edit right' onClick={()=>this.toEdit(item)}> </View>
+                <View className='at-icon at-icon-trash right' onClick={()=>this.deleteAddress(item)}> </View>
               </View>
             ):null
           ))

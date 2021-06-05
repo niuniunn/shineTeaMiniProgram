@@ -10,6 +10,7 @@ import '../../assets/styles/common.less'
 import './orders.less'
 import {setGlobalData} from "../../utils/global";
 
+const defaultSettings = require('../../defaultSettings')
 const orderList = [
   {
     id: 'shine12545',
@@ -98,6 +99,9 @@ export default class Orders extends Component {
       current: 0,
       hasOrder: true,
       orderList: [],
+      page: 1,
+      size: 10,
+      total: 0
     }
   }
   handleClick (value) {
@@ -107,16 +111,7 @@ export default class Orders extends Component {
   }
 
   onLoad() {
-    orderList.map((item,index)=>{
-      let num = 0;
-      item.detail.map(item=>{
-        num += item.quantity;
-      })
-      orderList[index]["num"] = num;
-    })
-    this.setState({
-      orderList
-    })
+
   }
 
   componentWillMount () { }
@@ -125,7 +120,12 @@ export default class Orders extends Component {
 
   componentWillUnmount () { }
 
-  componentDidShow () { }
+  componentDidShow () {
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    if(memberInfo) {
+      this.getOrderList();
+    }
+  }
 
   componentDidHide () { }
 
@@ -135,11 +135,38 @@ export default class Orders extends Component {
     })
   }
 
-  toDetail = (order)=> {
-    //数据量太大用url携带参数的方式进行页面传参会丢失数据
-    setGlobalData("currentOrder",order);
+  toDetail = (orderId)=> {
     Taro.navigateTo({
-      url: `../orderDetail/orderDetail`
+      url: `../orderDetail/orderDetail?orderId=${orderId}`
+    })
+  }
+
+  getOrderList = ()=> {
+    let that = this;
+    const {page, size} = this.state;
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    wx.request({
+      url: defaultSettings.url + 'order/list',
+      data: {
+        openid: memberInfo.openid,
+        page,
+        size
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            console.log("订单列表：",res.data.data);
+            that.setState({
+              orderList: res.data.data.data,
+              total: res.data.data.total
+            })
+          }
+        }
+      }
     })
   }
 
@@ -155,22 +182,22 @@ export default class Orders extends Component {
                 orderList.map(item=>(
                   item.orderStatus?null:(
                     <View className="order-item">
-                      <View className="top" onClick={()=>this.toDetail(item)}>
+                      <View className="top" onClick={()=>this.toDetail(item.orderId)}>
                         <View className="shop">{item.shopName}</View>
                         <View className="status">{item.orderStatus?'已完成':'已下单'}<Text className="at-icon at-icon-chevron-right"> </Text></View>
                       </View>
-                      <View className="time" onClick={()=>this.toDetail(item)}>{item.createTime}</View>
-                      <View className="center" onClick={()=>this.toDetail(item)}>
+                      <View className="time" onClick={()=>this.toDetail(item.orderId)}>{item.createTime}</View>
+                      <View className="center" onClick={()=>this.toDetail(item.orderId)}>
                         <View className="img">
                           {
-                            item.detail.map(subItem=>(
-                              <Image src={subItem.picture} />
+                            item.pictureList.map(subItem=>(
+                              <Image src={subItem} />
                             ))
                           }
                         </View>
                         <View className="right">
-                          <View className="amount">¥ {item.actualPrice}</View>
-                          <View className="quantity">共{item.num}件</View>
+                          <View className="amount">¥ {item.actualPayment}</View>
+                          <View className="quantity">共{item.quantity}件</View>
                         </View>
                       </View>
                       <View className="bottom">
@@ -208,22 +235,22 @@ export default class Orders extends Component {
                 orderList.map(item=>(
                   item.orderStatus?(
                     <View className="order-item">
-                      <View className="top" onClick={()=>this.toDetail(item)}>
+                      <View className="top" onClick={()=>this.toDetail(item.orderId)}>
                         <View className="shop">{item.shopName}</View>
                         <View className="status">{item.orderStatus?'已完成':'已下单'}<Text className="at-icon at-icon-chevron-right"> </Text></View>
                       </View>
-                      <View className="time" onClick={()=>this.toDetail(item)}>{item.createTime}</View>
-                      <View className="center" onClick={()=>this.toDetail(item)}>
+                      <View className="time" onClick={()=>this.toDetail(item.orderId)}>{item.createTime}</View>
+                      <View className="center" onClick={()=>this.toDetail(item.orderId)}>
                         <View className="img">
                           {
-                            item.detail.map(subItem=>(
-                              <Image src={subItem.picture} />
+                            item.pictureList.map(subItem=>(
+                              <Image src={subItem} />
                             ))
                           }
                         </View>
                         <View className="right">
-                          <View className="amount">¥ {item.actualPrice}</View>
-                          <View className="quantity">共{item.num}件</View>
+                          <View className="amount">¥ {item.actualPayment}</View>
+                          <View className="quantity">共{item.quantity}件</View>
                         </View>
                       </View>
                       <View className="bottom">

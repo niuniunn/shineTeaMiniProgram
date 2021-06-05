@@ -8,20 +8,14 @@ import Taro from "@tarojs/taro";
 import {getGlobalData} from "../../utils/global";
 
 const chooseLocation = requirePlugin('chooseLocation');   //地图选点插件
+const defaultSettings = require('../../defaultSettings')
 export default class Addaddress extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      addressInfo: {
-        name: '',
-        gender: 1,
-        tel: '',
-        address: '',
-        detail: '',
-        longitude: '',
-        latitude: ''
-      }
+      addressInfo: {},
+      flag: true   //true为编辑  false为新增
     }
   }
 
@@ -29,6 +23,10 @@ export default class Addaddress extends Component {
     if(options.addressInfo!==undefined) {
       this.setState({
         addressInfo: JSON.parse(options.addressInfo)
+      })
+    } else {
+      this.setState({
+        flag: false
       })
     }
   }
@@ -57,7 +55,7 @@ export default class Addaddress extends Component {
   componentDidHide () { }
 
   selectAddress = ()=> {
-    const key = 'ZLWBZ-WDHW3-QIY3U-3JKAG-SP6DS-AMB34'; //使用在腾讯位置服务申请的key
+    const key = defaultSettings.key; //使用在腾讯位置服务申请的key
     const referer = '闲茶-小程序'; //调用插件的app的名称
     const location = JSON.stringify(getGlobalData("userLocation"));
     const category = '教育学校,房产小区';
@@ -85,7 +83,7 @@ export default class Addaddress extends Component {
 
   telInput = (e)=> {
     let addressInfo = this.state.addressInfo;
-    addressInfo.tel = e.detail.value;
+    addressInfo.phoneNumber = e.detail.value;
     this.setState({
       addressInfo
     })
@@ -93,7 +91,7 @@ export default class Addaddress extends Component {
 
   detailInput = (e)=> {
     let addressInfo = this.state.addressInfo;
-    addressInfo.detail = e.detail.value;
+    addressInfo.addressDetail = e.detail.value;
     this.setState({
       addressInfo
     })
@@ -101,9 +99,83 @@ export default class Addaddress extends Component {
 
   submit = ()=> {
     console.log('addressInfo：',this.state.addressInfo);
-    Taro.navigateBack({
-      delta: 1
-    })
+    let {addressInfo, flag} = this.state;
+    delete addressInfo.address;
+    delete addressInfo.isSelectable;
+    let that = this;
+    //更新还是编辑
+    if(flag) {
+      wx.request({
+        url: defaultSettings.url + 'address/edit',
+        method: 'POST',
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: {...addressInfo},
+        success(res) {
+          if(res.statusCode === 200) {
+            if(res.data.code === 0) {
+              Taro.showToast({
+                title: '修改成功',
+                icon: 'success',
+                duration: 2000
+              });
+              Taro.navigateBack({
+                delta: 1
+              })
+            } else {
+              Taro.showToast({
+                title: res.data.message,
+                icon: 'none',
+                duration: 2000
+              });
+            }
+          } else {
+            Taro.showToast({
+              title: '网络错误',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        }
+      })
+    } else {
+      const memberInfo = Taro.getStorageSync("memberInfo");
+      wx.request({
+        url: defaultSettings.url + 'address/create',
+        method: 'POST',
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: {...addressInfo,memberId: memberInfo.memberId},
+        success(res) {
+          if(res.statusCode === 200) {
+            if(res.data.code === 0) {
+              Taro.showToast({
+                title: '添加成功',
+                icon: 'success',
+                duration: 2000
+              });
+              Taro.navigateBack({
+                delta: 1
+              })
+            } else {
+              Taro.showToast({
+                title: res.data.message,
+                icon: 'none',
+                duration: 2000
+              });
+            }
+          } else {
+            Taro.showToast({
+              title: '网络错误',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        }
+      })
+    }
   }
 
   render () {
@@ -129,7 +201,7 @@ export default class Addaddress extends Component {
           <View className='form-item'>
             <Text>手机号</Text>
             <View>
-              <Input name='tel' placeholder='请填写收货人手机号码' value={addressInfo.tel} type='number' onInput={this.telInput} />
+              <Input name='tel' placeholder='请填写收货人手机号码' value={addressInfo.phoneNumber} type='number' onInput={this.telInput} />
             </View>
           </View>
           <View className='form-item'>
@@ -142,7 +214,7 @@ export default class Addaddress extends Component {
           <View className='form-item'>
             <Text>门牌号</Text>
             <View>
-              <Input name='detail' value={addressInfo.detail} placeholder='例：B座6楼602室' onInput={this.detailInput} />
+              <Input name='detail' value={addressInfo.addressDetail} placeholder='例：B座6楼602室' onInput={this.detailInput} />
             </View>
           </View>
         </View>

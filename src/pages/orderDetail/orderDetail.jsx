@@ -58,6 +58,7 @@ const shopInfo = {
   openTime: '10:00',
   closeTime: '22:00'
 };
+const defaultSettings = require('../../defaultSettings')
 export default class Orderdetail extends Component {
 
   constructor(props) {
@@ -68,9 +69,9 @@ export default class Orderdetail extends Component {
     }
   }
 
-  onLoad() {
+  onLoad(options) {
+    this.getOrderDetail(options.orderId);
     this.setState({
-      order: getGlobalData("currentOrder"),
       shopInfo
     });
   }
@@ -95,6 +96,32 @@ export default class Orderdetail extends Component {
     Taro.openLocation({
       latitude: this.state.shopInfo.latitude,
       longitude: this.state.shopInfo.longitude
+    })
+  }
+
+  getOrderDetail = (orderId)=> {
+    let that = this;
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    wx.request({
+      url: defaultSettings.url + 'order/detail',
+      data: {
+        openid: memberInfo.openid,
+        orderId
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res) {
+        if(res.statusCode === 200) {
+          if(res.data.code === 0) {
+            console.log(res.data.data);
+            that.setState({
+              order: res.data.data
+            })
+          }
+        }
+      }
     })
   }
 
@@ -126,25 +153,25 @@ export default class Orderdetail extends Component {
           </View>
           <View className='list'>
             {
-              JSON.stringify(order)!=="{}"?order.detail.map(item=>(
+              JSON.stringify(order)!=="{}"?order.orderDetailList.map(item=>(
                 <View className='item'>
                   <View className='left'>
-                    <Image src={item.picture} />
+                    <Image src={item.productPicture} />
                   </View>
                   <View className='center'>
-                    <View className='name'>{item.name}</View>
+                    <View className='name'>{item.productName}</View>
                     <View className='specification'>{item.specification}</View>
                   </View>
                   <View className='right'>
-                    <View className='price'>¥ {item.price}</View>
-                    <View className='quantity'>×{item.quantity}</View>
+                    <View className='price'>¥ {item.productPrice}</View>
+                    <View className='quantity'>×{item.productQuantity}</View>
                   </View>
                 </View>
               )):null
             }
           </View>
           <AtList hasBorder={false}>
-            <AtListItem title='商品总价' extraText={`¥ ${order.totalPrice}`} />
+            <AtListItem title='商品总价' extraText={`¥ ${order.orderAmount}`} />
             {
               order.shippingFee!==undefined?(
                 <AtListItem title='配送费' extraText={`¥ ${order.shippingFee}`} />
@@ -153,7 +180,7 @@ export default class Orderdetail extends Component {
             <AtListItem title='优惠金额' extraText={`¥ ${order.discount}`} />
           </AtList>
           <View className='actual'>
-            共计2件商品，合计 <Text>{`¥ ${order.actualPrice}`}</Text>
+            共计2件商品，合计 <Text>{`¥ ${order.actualPayment}`}</Text>
           </View>
         </View>
         <View className='my-card bottom'>
@@ -161,10 +188,10 @@ export default class Orderdetail extends Component {
           <View className='list'>
             <View className='item'><View className='name'>下单时间：</View><Text className='val'>{order.createTime}</Text></View>
             <View className='item'><View className='name'>取单号：</View><Text className='val'>{order.code}</Text></View>
-            <View className='item'><View className='name'>订单编号：</View><Text className='val'>{order.id}</Text></View>
+            <View className='item'><View className='name'>订单编号：</View><Text className='val'>{order.orderId}</Text></View>
             {order.addressInfo!==undefined?(
-              <View className='item'><View className='name'>收货信息：</View><Text className='val'>{order.addressInfo.buyerAddress}
-                {`${order.addressInfo.name}(${order.addressInfo.gender==1?'先生':'女士'})`}</Text></View>
+              <View className='item'><View className='name'>收货信息：</View><Text className='val'>{order.buyerAddress}
+                {`${order.buyerName}(${order.buyerGender==1?'先生':'女士'})`}</Text></View>
             ):null}
             <View className='item'><View className='name'>备注信息：</View><Text className='val'>{order.remark}</Text></View>
           </View>
