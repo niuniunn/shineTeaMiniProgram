@@ -40,7 +40,6 @@ export default class Addaddress extends Component {
   componentDidShow () {
     // 从地图选点插件返回后，在页面的onShow生命周期函数中能够调用插件接口，取得选点结果对象
     const location = chooseLocation.getLocation(); // 如果点击确认选点按钮，则返回选点结果对象，否则返回null
-    console.log(location);
     if(location !== null) {
       let addressInfo = this.state.addressInfo;
       addressInfo.address = location.name;
@@ -55,9 +54,13 @@ export default class Addaddress extends Component {
   componentDidHide () { }
 
   selectAddress = ()=> {
+    const defaultLoc = {
+      latitude: 30.57173,
+      longitude: 103.987235
+    };
     const key = defaultSettings.key; //使用在腾讯位置服务申请的key
     const referer = '闲茶-小程序'; //调用插件的app的名称
-    const location = JSON.stringify(getGlobalData("userLocation"));
+    const location = getGlobalData("userLocation")?JSON.stringify(getGlobalData("userLocation")):JSON.stringify(defaultLoc);
     const category = '教育学校,房产小区';
 
     Taro.navigateTo({

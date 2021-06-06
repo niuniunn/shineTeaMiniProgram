@@ -1,6 +1,7 @@
 export default {
   pages: [
     'pages/profile/profile',
+    'pages/addressManage/addressManage',
     'pages/goods/goods',
     'pages/address/address',
     'pages/shop/shop',

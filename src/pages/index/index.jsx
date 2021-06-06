@@ -1,11 +1,24 @@
 import React, { Component } from 'react'
+import Taro from '@tarojs/taro'
 import { View, Text, Swiper, SwiperItem,Image  } from '@tarojs/components'
 
 import '../../assets/styles/common.less'
 import './index.less'
+import {setGlobalData} from "../../utils/global";
 export default class Index extends Component {
 
-  componentWillMount () { }
+  constructor(props) {
+    super(props);
+    this.state = {
+      memberInfo: ''
+    }
+  }
+
+
+  componentWillMount () {
+    const memberInfo = Taro.getStorageSync("memberInfo");
+    this.setState({memberInfo});
+  }
 
   componentDidMount () { }
 
@@ -15,7 +28,15 @@ export default class Index extends Component {
 
   componentDidHide () { }
 
+  toShopping = (type) => {
+    Taro.switchTab({
+      url: '../goods/goods'
+    })
+    setGlobalData("active", type);
+  }
+
   render () {
+    const {memberInfo} = this.state;
     return (
       <View className="content">
         <View className="banner">
@@ -36,12 +57,12 @@ export default class Index extends Component {
         </View>
         <View className="card buy-way">
           <View className="top">
-            <View className="left">
+            <View className="left" onClick={()=>this.toShopping(0)}>
               <Image src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E9%97%A8%E5%BA%97.png" alt=""/>
               <View className="bold">门店自取</View>
               <View className="small">下单免排队</View>
             </View>
-            <View className="right">
+            <View className="right" onClick={()=>this.toShopping(1)}>
               <Image src="https://7368-shinetea-9gye2q4w52899527-1304969792.tcb.qcloud.la/icon/%E5%A4%96%E9%80%81.png" alt=""/>
               <View className="bold">外卖</View>
               <View className="small">无接触配送</View>
@@ -53,10 +74,14 @@ export default class Index extends Component {
             <Text className="small">拼单喝茶，有闲更有乐</Text>*/}
           </View>
         </View>
-        <View className="card points">
-          <View className="bold">我的积分 999</View>
-          <View className="small">可兑换外卖折扣券和闲茶周边</View>
-        </View>
+        {
+          memberInfo ? (
+            <View className="card points">
+              <View className="bold">我的积分 {memberInfo.points}</View>
+              <View className="small">可兑换外卖折扣券和闲茶周边</View>
+            </View>
+          ) : null
+        }
       </View>
     )
   }

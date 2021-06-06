@@ -112,6 +112,12 @@ export default class Profile extends Component {
       Taro.navigateTo({
         url: '../myCoupon/myCoupon'
       })
+    } else if(index === 2) {
+      //我的钱包
+    } else if(index === 3) {
+      Taro.navigateTo({
+        url: '../addressManage/addressManage'
+      })
     }
   }
 
@@ -197,6 +203,12 @@ export default class Profile extends Component {
     }
   }
 
+  toMyOrders = ()=> {
+    Taro.switchTab({
+      url: '../orders/orders'
+    })
+  }
+
   render () {
     const data = [
       {
@@ -262,7 +274,7 @@ export default class Profile extends Component {
               {/*<View className="universe">闲茶宇宙播报</View>*/}
             </View>
             <AtList hasBorder={false} className='list'>
-              <AtListItem title='我的订单' arrow='right' />
+              <AtListItem title='我的订单' arrow='right' onClick={this.toMyOrders} />
               <AtListItem title='关于闲茶' arrow='right' />
               <AtListItem title='联系客服' arrow='right' />
               <View className='cover'>
